@@ -12,8 +12,13 @@
         require "navbar.php";
         require './models/Event.php';
         $event = new Event();
-        if($_SERVER['REQUEST_METHOD'=="POST"]){
-            $event_id = $_POST["event_id"];
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (isset($_POST['event_id'])) {
+                $event_id = $_POST['event_id'];
+                $event_by_id = $event->get_event_by_id($event_id);
+            } else {
+                // Handle the case where event_id is not set in the POST data
+            }
         }
         $event_by_id = $event->get_event_by_id($event);
     ?>
