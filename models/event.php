@@ -1,5 +1,4 @@
 <?php
-    require 'database.php';
     class Event{
         protected $pdo;
         public function __construct(){
@@ -17,13 +16,35 @@
             return "$event_id";
         }
         public function add_event($event_data){
-            $sql = "INSERT INTO events (title, description, date) VALUES (:title, :description, :date)";
+            $fields = ['titre', 'date', 'lieu', 'heure', 'image', 'description','prix'];
+            $sanitized_data = [];
+            foreach ($fields as $field) {
+                if (isset($event_data[$field])) {
+                    $sanitized_data[$field] = htmlspecialchars(trim($event_data[$field]), ENT_QUOTES, 'UTF-8');
+                } else {
+                    $sanitized_data[$field] = null;
+                }
+            }
+            $sql = "INSERT INTO events (titre, date, lieu, heure, image ,description,prix) 
+                    VALUES (:titre, :date, :lieu, :heure, :image ,:description,:prix )";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute($event_data);
+             $stmt->execute($sanitized_data);
+             Header('Location: '.$_SERVER['PHP_SELF']);
+                Exit();
+                            // print_r($event_data);
         }
-    
+        
         public function update_event($event_id, $event_data){
-            $sql = "UPDATE events SET title = :title, description = :description, date = :date WHERE id = :id";
+            $sql = "UPDATE events SET 
+                        titre = :titre, 
+                        date = :date, 
+                        lieu = :lieu, 
+                        heure = :heure, 
+                        image = :image, 
+                        description = :description,
+                        prix = :prix
+                      
+                    WHERE id = :id";
             $event_data['id'] = $event_id;
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute($event_data);

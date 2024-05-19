@@ -32,6 +32,7 @@ class User {
         $user = $stmt->fetch();
         if ($password == $user['password']) {
             session_start();
+            $_SESSION['user_id'] = $user['id'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['firstname'] = $user['nom'];
             $_SESSION['lastname'] = $user['prenom'];

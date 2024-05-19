@@ -6,20 +6,15 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.104.2">
-    <title>Album example · Bootstrap v5.2</title>
+    <title>Manage Events</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" href="/docs/5.2/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="manifest" href="/docs/5.2/assets/img/favicons/manifest.json">
-    <link rel="mask-icon" href="/docs/5.2/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
-    <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon.ico">
-    <meta name="theme-color" content="#712cf9">
+    
 
     <style>
         body {
@@ -86,29 +81,43 @@
         $eventModel = new Event();
         $events = $eventModel->get_all();
 
-        // Define a callback function to process form data for Function 1
         function processFunction1Data($formData, $eventId) {
-            // Process data for Function 1
             echo "Data processed for Function 1 (Event ID: $eventId):";
             $eventModel = new Event();
             $eventModel->delete_event($eventId);
         }
 
-        if (isset($_POST['function2_submit'])) {
-            $eventId = $_POST['event_id']; // Retrieve the event ID from the form
-            processFunction1Data($_POST, $eventId);
-        }
         function updateEvent($eventId, $data) {
             $eventModel = new Event();
             $eventModel->update_event($eventId,$data);
 
         }
+         function add_event($data){
+            $eventModel = new Event();
+            $eventModel->add_event($data);
+
+        }
+
+        if (isset($_POST['function2_submit'])) {
+            $eventId = $_POST['event_id'];
+            processFunction1Data($_POST, $eventId);
+        }
+
+        if (isset($_POST['add_event'])) {
+            add_event($_POST);
+        }
+        if (isset($_POST['edit_event'])) {
+            $eventId = $_POST['event_id'];
+            processFunction1Data($_POST, $eventId);
+        }
+        
+       
         ?>
 
         <div class="album py-5">
             <div class="container">
                 <div class="col-md-12">
-                    <button class="btn btn-success ">Add New Event</button>
+                    <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#exampleModal">Add New Event</button>
                 </div>
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -120,7 +129,10 @@
                                     <p class="card-text"><?php echo htmlspecialchars($event['description']); ?>.</p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                                                <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                                                <button type="button" name="show_edit" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#EditModal">Edit</button>
+                                            </form>
                                             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                                                 <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary" name="function2_submit">Delete</button>
@@ -136,6 +148,94 @@
             </div>
         </div>
     </main>
-    <script src="/docs/5.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-  </body>
+    
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form id="modalForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Title</label>
+                            <input type="text" name="titre" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Date</label>
+                            <input type="date" name="date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>  <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Place</label>
+                            <input type="text" name="lieu" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Heure</label>
+                            <input type="time" name="heure" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">image URL</label>
+                            <input type="text" name="image" class="form-control" id="exampleInputPassword1">
+                        </div> <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Description</label>
+                            <textarea name="description" class="form-control" id="exampleCheck1" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">prix</label>
+                            <input type="number" name="prix" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        
+                        <button type="submit" name="add_event" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><?php echo $_POST['event_id']; ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form id="modalForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Title</label>
+                            <input type="text" name="titre" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Date</label>
+                            <input type="date" name="date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>  <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Place</label>
+                            <input type="text" name="lieu" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Heure</label>
+                            <input type="time" name="heure" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">image URL</label>
+                            <input type="text" name="image" class="form-control" id="exampleInputPassword1">
+                        </div> <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Description</label>
+                            <textarea name="description" class="form-control" id="exampleCheck1" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">prix</label>
+                            <input type="number" name="prix" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        
+                        <button type="submit" name="add_event" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+</body>
 </html>
